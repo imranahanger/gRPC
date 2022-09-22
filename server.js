@@ -20,8 +20,33 @@ let news = [
 
 server.addService(newsProto.NewsService.service, {
     getAllNews: (_, callback) => {
-        callback(null, {news});
+        callback(null, { news });
     },
+    addNews: (call, callback) => {
+        const _news = {
+            id: Date.now().valueOf(), ...call.request
+        };
+        news.push(_news)
+        callback(null, _news)
+    },
+    deleteNews: (_, callback) => {
+        const newsId = _.request.id;
+        news = news.filter(({ id }) => id != newsId)
+        call(null, {})
+    },
+    getNews: (_, callback) => {
+        const newsId = _.request.id;
+        const newsItem = news.find(({ id }) => newsId == id);
+        callback(null, newsItem);
+    },
+    editNews: (_, callback) => {
+        const newsId = _.request.id;
+        const newsItem = news.find(({ id }) => newsId == id);
+        newsItem.body = _.request.body;
+        newsItem.postImage = _.request.postImage;
+        newsItem.title = _.request.title;
+        callback(null, newsItem);
+    }
 });
 
 server.bindAsync(
